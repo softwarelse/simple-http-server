@@ -1,7 +1,6 @@
 package se.softwarelse.stupidhttpserver.workers
 
-import se.softwarelse.stupidhttpserver.model.{KV, Request, StartLine}
-import se.softwarelse.stupidhttpserver.{httpEndl, lf}
+import se.softwarelse.stupidhttpserver.model.{KV, Request, StartLine, httpEndl, lf}
 
 import java.io.{BufferedReader, ByteArrayOutputStream, InputStream, StringReader}
 import java.nio.charset.StandardCharsets

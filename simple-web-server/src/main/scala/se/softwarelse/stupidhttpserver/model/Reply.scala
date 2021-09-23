@@ -1,9 +1,5 @@
 package se.softwarelse.stupidhttpserver.model
 
-import se.softwarelse.stupidhttpserver.httpEndl
-
-import java.nio.charset.StandardCharsets
-
 case class Reply(status: Int, version: String, customHeaders: Seq[KV], body: Option[Array[Byte]]) {
   val defaultBody: Array[Byte] = Array[Byte]()
   val bodyBytes: Array[Byte] = body.getOrElse(defaultBody)

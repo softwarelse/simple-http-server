@@ -1,22 +1,16 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.context
 
 import com.invidi.simplewebserver.annotations.{Path, PathParam, QueryParam, RestController}
 import com.invidi.simplewebserver.context.{RequestHandler, WebServerContext}
 import se.softwarelse.stupidhttpserver.model.{HttpServiceException, Request}
 
 import java.lang.annotation.Annotation
-import java.lang.reflect.{Method, Parameter}
+import java.lang.reflect.Method
 import java.util.UUID
 import java.util.logging.Logger
 import scala.collection.concurrent.TrieMap
 
 class StupidHttpServerContext extends WebServerContext {
-
-  private val log: Logger = Logger.getLogger(getClass.getName)
-
-  private val mappings = new TrieMap[String, ControllerMapping]()
-
-  @volatile var staticPath: String = "/" + UUID.randomUUID().toString
 
   override def setStaticPath(path: String): Unit = this.staticPath = path
 
@@ -121,46 +115,10 @@ class StupidHttpServerContext extends WebServerContext {
     ))
   }
 
-  case class ControllerMapping(pathPrefix: String,
-                               controller: Object,
-                               methodMappings: Seq[MethodMapping]
-                              ) {
-    def getMethodMapping(method: String, requestFullPath: String): Option[MethodMapping] = {
-      val requestSubPath: String = requestFullPath.drop(pathPrefix.length)
-      methodMappings.find(m => m.httpMethod == method && m.subPath == requestSubPath)
-    }
-  }
+  private val log: Logger = Logger.getLogger(getClass.getName)
+  private val mappings = new TrieMap[String, ControllerMapping]()
+  @volatile var staticPath: String = "/" + UUID.randomUUID().toString
 
-  case class MethodMapping(httpMethod: String,
-                           subPath: String,
-                           classMethod: Method,
-                           paramMappings: Seq[ParameterMapping],
-                           requiredHeaders: Seq[String],
-                          ) {
-
-  }
-
-  case class ParameterMapping(key: String,
-                              requiredInHttpRequest: Boolean,
-                              default: Option[String],
-                              source: Either[QueryParam, PathParam]) {
-    def isQueryParam: Boolean = source.isLeft
-
-    def isPathParam: Boolean = !isQueryParam
-  }
-
-  private implicit class findAnnotationInList(list: Seq[Annotation]) {
-
-    def find[T](cls: Class[_ <: T]): Option[T] = {
-      list
-        .find(_.annotationType() == cls)
-        .map(_.asInstanceOf[T])
-    }
-
-    def require[T](cls: Class[_ <: T]): T = {
-      find(cls).getOrElse(throw new IllegalArgumentException(s"could not find $cls Annotation"))
-    }
-  }
 }
 
 

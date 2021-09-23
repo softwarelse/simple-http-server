@@ -2,6 +2,7 @@ package se.softwarelse.stupidhttpserver
 
 import com.invidi.simplewebserver.context.WebServerContext
 import com.invidi.simplewebserver.main.WebServer
+import se.softwarelse.stupidhttpserver.context.StupidHttpServerContext
 import se.softwarelse.stupidhttpserver.workers.Acceptor
 
 import java.net.ServerSocket
