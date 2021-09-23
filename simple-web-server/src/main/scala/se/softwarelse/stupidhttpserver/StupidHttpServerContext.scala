@@ -67,7 +67,7 @@ class StupidHttpServerContext extends WebServerContext {
 
   override def addController(controller: Object): Unit = {
 
-    val classAnnotations: Seq[Annotation] = controller.getClass.getAnnotations.toSeq
+    val classAnnotations: Seq[Annotation] = controller.getClass.getAnnotations
 
     val restControllerAnnotation: RestController =
       classAnnotations.require(classOf[RestController])
@@ -75,7 +75,7 @@ class StupidHttpServerContext extends WebServerContext {
     log.info(s"Registering ${classOf[RestController].getSimpleName}: $controller")
     val pathPrefix = restControllerAnnotation.value()
 
-    val allMethods = controller.getClass.getMethods.toSeq
+    val allMethods: Seq[Method] = controller.getClass.getMethods
     val methodsWithPathAnnotation: Seq[(Method, Path)] = allMethods.map(m => m -> Option(m.getAnnotation(classOf[Path]))).collect {
       case (m, Some(pathAnnotation)) =>
         m -> pathAnnotation
@@ -84,7 +84,7 @@ class StupidHttpServerContext extends WebServerContext {
     val methodMappings: Seq[MethodMapping] = for ((method, pathAnnotation) <- methodsWithPathAnnotation) yield {
 
       //log.info(s"Mapping $method using $pathAnnotation")
-      val methodParams: Seq[Parameter] = method.getParameters.toSeq
+      val methodParams: Seq[Parameter] = method.getParameters
       val paramMappings: Seq[ParameterMapping] = methodParams.map { methodParam =>
         Option(methodParam.getAnnotation(classOf[QueryParam])).map { queryParamAnnotation =>
           ParameterMapping(
