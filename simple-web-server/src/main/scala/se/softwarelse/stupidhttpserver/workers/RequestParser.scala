@@ -24,6 +24,7 @@ object RequestParser {
     val byteBuffer = new ByteArrayOutputStream
     val charBuffer = new StringBuilder
 
+    // apparently, according to the http spec, you are supposed to handle non-standard endings, or a combination of such :P
     val possibleSectionsEnds: Seq[String] = Seq(
       httpEndl + httpEndl,
       lf + httpEndl,
