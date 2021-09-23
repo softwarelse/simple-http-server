@@ -23,7 +23,7 @@ class Client(clientSocket: Socket) extends Runnable {
         val headReader = new BufferedReader(new StringReader(rawHeadString))
         val startLine: StartLine = readStartLine(headReader)
         val headers: Seq[KV] = readHeaders(headReader)
-        val requestWoBody = Request(startLine, headers, None)
+        val requestWoBody = Request(startLine = startLine, headers = headers, body = None)
         val bodyBytes = stream.readNBytes(requestWoBody.contentLength)
         val request = requestWoBody.copy(body = Some(bodyBytes).filter(_.nonEmpty))
         val reply = process(request)
