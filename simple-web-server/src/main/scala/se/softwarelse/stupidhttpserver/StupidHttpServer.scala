@@ -11,12 +11,13 @@ class StupidHttpServer extends WebServer {
 
   private val log: Logger = Logger.getLogger(getClass.getName)
   private var serverSocket: ServerSocket = _
+  private val context = new StupidHttpServerContext
 
   override def start(port: Int): Unit = {
     require(serverSocket == null, s"Dont start twice!")
     log.info(s"Starting $this on port $port")
     serverSocket = new ServerSocket(port)
-    new Thread(new Accepter(serverSocket)).start()
+    new Thread(new Accepter(serverSocket, context)).start()
   }
 
   override def stop(): Unit = {
@@ -25,8 +26,7 @@ class StupidHttpServer extends WebServer {
   }
 
   override def getWebContext: WebServerContext = {
-    // Wtf do I need this for :D
-    ???
+    context
   }
 
 }

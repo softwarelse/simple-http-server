@@ -9,13 +9,15 @@ public class MyWebApplication {
    public static void main(String[] args) {
       final WebServer ws = new StupidHttpServer();
 
+      ws.getWebContext().setStaticPath("/static");
+
       // TODO: Set path for static files
       // TODO: Register controller MyController
 
       /*
        * Example:
        *
-       *  ws.getWebContext().setStaticPath("/static");
+       *
        *  ws.getWebContext().addController(new MyController());
        */
 

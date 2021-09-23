@@ -1,9 +1,10 @@
 package se.softwarelse.stupidhttpserver.workers
 
+import com.invidi.simplewebserver.context.WebServerContext
 import se.softwarelse.stupidhttpserver._
 import se.softwarelse.stupidhttpserver.model.{KV, Reply, Request, StartLine}
 
-import java.io.{BufferedInputStream, BufferedReader, ByteArrayOutputStream, StringReader}
+import java.io.{BufferedInputStream, BufferedReader, ByteArrayOutputStream, InputStream, StringReader}
 import java.net.Socket
 import java.nio.charset.StandardCharsets
 import java.util.logging.Logger
@@ -11,7 +12,7 @@ import scala.annotation.tailrec
 import scala.util.Try
 import scala.util.control.NonFatal
 
-class Client(clientSocket: Socket) extends Runnable {
+class Client(clientSocket: Socket, webServerContext: WebServerContext) extends Runnable {
 
   private val log: Logger = Logger.getLogger(getClass.getName)
 
@@ -92,22 +93,65 @@ class Client(clientSocket: Socket) extends Runnable {
       acc
     }
     else {
-      val headerParts = nextHeaderLineRaw.split(':').map(_.trim)
-      readHeaders(reader, acc :+ KV(headerParts(0), headerParts(1))) // yeye, we will fail on invalid input :)
+      val splitterIndex: Int = nextHeaderLineRaw.indexOf(':')
+      val (key, value) = if (splitterIndex >= 0) {
+        val (k,v) = nextHeaderLineRaw.splitAt(splitterIndex)
+        (k.trim, v.drop(1).trim)
+      }
+      else {
+        (nextHeaderLineRaw, "")
+      }
+      readHeaders(reader, acc :+ KV(key, value))
     }
   }
 
   private def process(request: Request): Reply = {
+
     log.info(s"Processing shit: $request")
-    val paramsJson: String = request.params.map(_.toJson).mkString(",")
-    val headersJson: String = request.headers.map(_.toJson).mkString(",")
-    // TODO: Do something here instead..
-    Reply(
-      status = 200,
-      version = "HTTP/1.1",
-      customHeaders = Seq(KV("Content-Type", "application/json")),
-      body = Some(s"""{ "your-params": [ $paramsJson ], "your-headers": [ $headersJson ] }""")
-    )
+
+    // static resources
+    if (request.effectivePath.startsWith(webServerContext.getStaticPath)) {
+      val subPath = request.effectivePath.drop(webServerContext.getStaticPath.length)
+      val fileStream: InputStream = if (subPath.isEmpty || subPath == "/") {
+        getClass.getClassLoader.getResourceAsStream("static/index.html")
+      }
+      else {
+        getClass.getClassLoader.getResourceAsStream(s"static/$subPath")
+      }
+      val resourceData: Option[Array[Byte]] = if (fileStream != null) {
+        Some(fileStream.readAllBytes())
+      }
+      else {
+        None
+      }
+      resourceData match {
+        case None =>
+          Reply(
+            status = 404,
+            version = "HTTP/1.1",
+            customHeaders = Nil,
+            body = Some(s"Shit doesnt exist")
+          )
+        case Some(data) =>
+          Reply(
+            status = 200,
+            version = "HTTP/1.1",
+            customHeaders = Nil,
+            body = Some(new String(data, StandardCharsets.UTF_8))
+          )
+      }
+    }
+    else {
+      // TODO: Do something here instead.. Find a controller
+      val paramsJson: String = request.params.map(_.toJson).mkString(",")
+      val headersJson: String = request.headers.map(_.toJson).mkString(",")
+      Reply(
+        status = 200,
+        version = "HTTP/1.1",
+        customHeaders = Seq(KV("Content-Type", "application/json")),
+        body = Some(s"""{ "your-params": [ $paramsJson ], "your-headers": [ $headersJson ] }""")
+      )
+    }
   }
 
 }
