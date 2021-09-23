@@ -18,25 +18,13 @@ class StupidHttpServerContext extends WebServerContext {
 
   override def getHandler(method: String, requestPath: String): RequestHandler = {
 
-    val controllerMappingOpt: Option[ControllerMapping] = mappings.collectFirst {
-      case (prefix, mapping) if requestPath.startsWith(prefix) => mapping
-    }
-
-    val methodMappingOpt: Option[MethodMapping] =
-      controllerMappingOpt.flatMap(_.getMethodMapping(method, requestPath))
-
     (for {
-      controllerMapping <- controllerMappingOpt
-      methodMapping <- methodMappingOpt
+      controllerMapping <- mappings.collectFirst { case (p, m) if requestPath.startsWith(p) => m }
+      methodMapping <- controllerMapping.getMethodMapping(method, requestPath)
     } yield {
 
-      if (methodMapping.paramMappings.count(_.isPathParam) > 0) {
-        throw new RuntimeException(s"path parameters are not supported (yet?)!")
-      }
-
-      if (methodMapping.requiredHeaders.nonEmpty) {
-        throw new RuntimeException(s"required headers are not supported (yet?)!")
-      }
+      require(methodMapping.paramMappings.count(_.isPathParam) == 0, "path parameters are not supported (yet?)!")
+      require(methodMapping.requiredHeaders.isEmpty, "required headers are not supported (yet?)!")
 
       new RequestHandler {
 
