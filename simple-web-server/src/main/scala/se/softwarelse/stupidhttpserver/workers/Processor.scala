@@ -34,7 +34,7 @@ object Processor {
           status = 200,
           version = "HTTP/1.1",
           customHeaders = Seq(KV("Content-Type", data.contentType)),
-          body = Some(data.data)
+          body = Some(data.bytes)
         )
     }
   }

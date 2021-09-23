@@ -2,7 +2,7 @@ package se.softwarelse.stupidhttpserver.model
 
 import java.nio.charset.StandardCharsets
 
-case class ResponseData(data: Array[Byte], contentType: String) {
+case class ResponseData(bytes: Array[Byte], contentType: String) {
 
 }
 
