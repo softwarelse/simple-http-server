@@ -20,6 +20,7 @@ class StupidHttpServer extends WebServer {
   }
 
   override def stop(): Unit = {
+    require(serverSocket != null, s"Cant stop not yet started server!")
     serverSocket.close()
   }
 
