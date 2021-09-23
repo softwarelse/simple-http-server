@@ -2,11 +2,10 @@ package se.softwarelse.stupidhttpserver
 
 import com.invidi.simplewebserver.annotations.{Path, PathParam, QueryParam, RestController}
 import com.invidi.simplewebserver.context.{RequestHandler, WebServerContext}
-import se.softwarelse.stupidhttpserver.model.{HttpServiceException, KV, Reply, Request}
+import se.softwarelse.stupidhttpserver.model.{HttpServiceException, Request}
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.{Method, Parameter}
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 import java.util.logging.Logger
 import scala.collection.concurrent.TrieMap
@@ -43,17 +42,19 @@ class StupidHttpServerContext extends WebServerContext {
         throw new RuntimeException(s"path parameters are not supported (yet?)!")
       }
 
+      if (methodMapping.requiredHeaders.nonEmpty) {
+        throw new RuntimeException(s"required headers are not supported (yet?)!")
+      }
+
       new RequestHandler {
+
         override def invoke(request: Request): String = {
 
-          // Currently we just support query params
+          // Currently we just support strings in query params
           val args: Seq[Object] = methodMapping.paramMappings.map { paramMapping =>
-            // Currently just support strings
-            val arg: String =
-              request
-                .findQueryParamValue(paramMapping.key)
-                .getOrElse(throw HttpServiceException(400, s"Missing query parameter: ${paramMapping.key}"))
-            arg
+            request
+              .findQueryParamValue(paramMapping.key)
+              .getOrElse(throw HttpServiceException(400, s"Missing query parameter: ${paramMapping.key}"))
           }
 
           methodMapping.classMethod

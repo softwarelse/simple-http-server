@@ -1,6 +1,5 @@
 package se.softwarelse.stupidhttpserver.model
 
-import java.net.URL
 import java.nio.charset.StandardCharsets
 import scala.util.Try
 

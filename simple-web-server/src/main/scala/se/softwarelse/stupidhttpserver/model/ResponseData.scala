@@ -8,6 +8,8 @@ case class ResponseData(data: Array[Byte], contentType: String) {
 
 object ResponseData {
 
+  val empty: ResponseData = ResponseData(Array[Byte](), "")
+
   def deduceType(path: String, data: String): ResponseData = {
     val lcPath = path.trim.toLowerCase
     if (lcPath.endsWith(".json")) {
