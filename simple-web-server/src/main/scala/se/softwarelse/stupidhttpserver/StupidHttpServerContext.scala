@@ -11,4 +11,7 @@ class StupidHttpServerContext extends WebServerContext {
   override def setStaticPath(path: String): Unit = this.staticPath = path
 
   override def getStaticPath(): String = staticPath
+
+  override def addController(controller: Any): Unit = {
+  }
 }

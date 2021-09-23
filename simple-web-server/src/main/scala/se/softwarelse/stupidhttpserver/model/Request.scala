@@ -12,11 +12,7 @@ case class Request(startLine: StartLine, headers: Seq[KV], body: Option[Array[By
   lazy val contentLength: Int = findHeaderValue("Content-Length").map(_.toInt).getOrElse(0)
   lazy val TransferEncodingChunked: Boolean = findHeaderValue("Transfer-Encoding").map(_.toLowerCase.trim).contains("chunked")
   lazy val bodyAsUtf8: Option[String] = body.flatMap(bs => Try(new String(bs, StandardCharsets.UTF_8)).toOption)
-  lazy val refererUrl: Option[String] = findHeaderValue("Referer")
-  lazy val refererPath: Option[String] = refererUrl.map(url => new URL(url).getPath)
-  lazy val refererHost: Option[String] = refererUrl.map(url => new URL(url).getHost)
   lazy val path: String = startLine.path
-  lazy val effectivePath: String = (if (refererHost.nonEmpty && refererHost == host) refererPath.getOrElse("") else "") + path
 
   require(!TransferEncodingChunked, "Transfer-Encoding: Chunked is not supported!")
 
@@ -29,6 +25,6 @@ case class Request(startLine: StartLine, headers: Seq[KV], body: Option[Array[By
   }
 
   override def toString: String = {
-    s"$method $path { effectivePath=$effectivePath, host=$host, params=$params, body=$bodyAsUtf8, refererHost=$refererHost, refererPath=$refererPath, headers=$headers }"
+    s"$method $path { host=$host, params=$params, body=$bodyAsUtf8, headers=$headers }"
   }
 }

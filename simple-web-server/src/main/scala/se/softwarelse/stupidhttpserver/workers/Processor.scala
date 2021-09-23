@@ -14,12 +14,9 @@ object Processor {
   def process(request: Request, context: WebServerContext): Reply = {
     log.info(s"Processing request: $request")
 
-    val responseDataOpt: Option[ResponseData] = if (request.effectivePath.startsWith(context.getStaticPath)) {
+    val responseDataOpt: Option[ResponseData] =
       processStatic(request, context)
-    }
-    else {
-      processDynamic(request, context)
-    }
+        .orElse(processDynamic(request, context))
 
     responseDataOpt match {
       case None =>
@@ -40,19 +37,13 @@ object Processor {
   }
 
   private def processStatic(request: Request, context: WebServerContext): Option[ResponseData] = {
-    val subPath = request.effectivePath.drop(context.getStaticPath.length)
-    val resourcePath: String = if (subPath.isEmpty || subPath == "/") {
+    val resourcePath: String = if (request.path.isEmpty || request.path == "/") {
       "static/index.html"
     }
     else {
-      s"static/$subPath"
+      s"static/${request.path}"
     }
-    val fileStream: InputStream = if (subPath.isEmpty || subPath == "/") {
-      getClass.getClassLoader.getResourceAsStream(resourcePath)
-    }
-    else {
-      getClass.getClassLoader.getResourceAsStream(resourcePath)
-    }
+    val fileStream: InputStream = getClass.getClassLoader.getResourceAsStream(resourcePath)
     if (fileStream != null) {
       Some(ResponseData.deduceType(
         path = resourcePath,

@@ -6,4 +6,6 @@ public interface WebServerContext {
 
     void setStaticPath(String path);
     String getStaticPath();
+
+    void addController(Object controller);
 }
