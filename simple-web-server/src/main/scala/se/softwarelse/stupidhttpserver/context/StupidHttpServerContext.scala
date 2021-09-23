@@ -18,9 +18,9 @@ class StupidHttpServerContext extends WebServerContext {
 
   override def getHandler(method: String, requestPath: String): RequestHandler = {
 
-    val controllerMappingOpt: Option[ControllerMapping] = mappings.keySet
-      .find(prefix => requestPath.startsWith(prefix))
-      .flatMap(mappings.get)
+    val controllerMappingOpt: Option[ControllerMapping] = mappings.collectFirst {
+      case (prefix, mapping) if requestPath.startsWith(prefix) => mapping
+    }
 
     val methodMappingOpt: Option[MethodMapping] =
       controllerMappingOpt.flatMap(_.getMethodMapping(method, requestPath))
