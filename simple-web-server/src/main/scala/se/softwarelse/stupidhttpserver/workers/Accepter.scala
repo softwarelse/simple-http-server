@@ -16,7 +16,7 @@ class Accepter(serverSocket: ServerSocket,
     while (!serverSocket.isClosed) {
       try {
         val clientSocket = serverSocket.accept()
-        ExecutionContext.global.execute(new Session(clientSocket, webServerContext))
+        ExecutionContext.global.execute(new Connection(clientSocket, webServerContext))
       } catch {
         case NonFatal(e) =>
           log.severe(s"Shit went wront with socket.accept: $e") // stupid java logger cant show me stack traces
