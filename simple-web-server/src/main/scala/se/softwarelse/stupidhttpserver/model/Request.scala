@@ -1,4 +1,4 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.model
 
 import java.nio.charset.StandardCharsets
 import scala.util.Try

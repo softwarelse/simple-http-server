@@ -1,4 +1,6 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.model
+
+import se.softwarelse.stupidhttpserver.escapeJson
 
 case class KV(key: String, value: String) {
   def isEmpty: Boolean = key.isEmpty

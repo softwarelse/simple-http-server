@@ -1,4 +1,4 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.model
 
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -14,4 +14,3 @@ case class StartLine(method: String, uri: String, httpVersion: String) {
     KV(key, value)
   }
 }
-

@@ -1,4 +1,6 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.model
+
+import se.softwarelse.stupidhttpserver.httpEndl
 
 import java.nio.charset.StandardCharsets
 

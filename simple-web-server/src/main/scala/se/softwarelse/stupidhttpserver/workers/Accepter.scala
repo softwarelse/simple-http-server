@@ -1,4 +1,4 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.workers
 
 import java.net.ServerSocket
 import java.util.logging.Logger

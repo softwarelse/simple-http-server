@@ -1,4 +1,7 @@
-package se.softwarelse.stupidhttpserver
+package se.softwarelse.stupidhttpserver.workers
+
+import se.softwarelse.stupidhttpserver._
+import se.softwarelse.stupidhttpserver.model.{KV, Reply, Request, StartLine}
 
 import java.io.{BufferedInputStream, BufferedReader, ByteArrayOutputStream, StringReader}
 import java.net.Socket
