@@ -1,5 +1,6 @@
 package se.softwarelse.stupidhttpserver.workers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.invidi.simplewebserver.context.WebServerContext
 import se.softwarelse.stupidhttpserver.model.{KV, Reply, Request, ResponseData}
 
@@ -8,6 +9,8 @@ import java.nio.charset.StandardCharsets
 import java.util.logging.Logger
 
 object Processor {
+
+  private val objectMapper = new ObjectMapper
 
   private val log: Logger = Logger.getLogger(getClass.getName)
 
@@ -59,7 +62,7 @@ object Processor {
     Option(context.getHandler(request.method, request.path)) map { handler =>
       Option(handler.invoke(request)) match {
         case None => ResponseData(Array[Byte](), "text/raw")
-        case Some(data) => ResponseData(data.getBytes(StandardCharsets.UTF_8), "application/json")
+        case Some(data) => ResponseData(objectMapper.writeValueAsBytes(data), "application/json")
       }
     }
   }

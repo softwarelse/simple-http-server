@@ -48,7 +48,7 @@ class StupidHttpServerContext extends WebServerContext {
 
       new RequestHandler {
 
-        override def invoke(request: Request): String = {
+        override def invoke(request: Request): Object = {
 
           // Currently we just support strings in query params
           val args: Seq[Object] = methodMapping.paramMappings.map { paramMapping =>
@@ -59,7 +59,6 @@ class StupidHttpServerContext extends WebServerContext {
 
           methodMapping.classMethod
             .invoke(controllerMapping.controller, args: _*)
-            .asInstanceOf[String]
 
         }
       }

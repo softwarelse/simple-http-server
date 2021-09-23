@@ -6,8 +6,8 @@ public interface RequestHandler {
 
     /**
      * @param request data
-     * @return JSON body for response, or null if there is no body to return
+     * @return Body for response in POJO form, needs to be serialized using jackson, or null if there is no body to return
      * @throws RuntimeException if something goes wrong :P
      */
-    String invoke(Request request);
+    Object invoke(Request request);
 }
