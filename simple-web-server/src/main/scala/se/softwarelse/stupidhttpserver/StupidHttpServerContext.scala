@@ -83,9 +83,7 @@ class StupidHttpServerContext extends WebServerContext {
 
     val methodMappings: Seq[MethodMapping] = for ((method, pathAnnotation) <- methodsWithPathAnnotation) yield {
 
-      //log.info(s"Mapping $method using $pathAnnotation")
-      val methodParams: Seq[Parameter] = method.getParameters
-      val paramMappings: Seq[ParameterMapping] = methodParams.map { methodParam =>
+      val paramMappings: Seq[ParameterMapping] = method.getParameters.map { methodParam =>
         Option(methodParam.getAnnotation(classOf[QueryParam])).map { queryParamAnnotation =>
           ParameterMapping(
             key = queryParamAnnotation.value(),
