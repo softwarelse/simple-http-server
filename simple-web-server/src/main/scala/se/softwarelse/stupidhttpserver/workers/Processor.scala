@@ -56,10 +56,12 @@ object Processor {
   }
 
   private def processDynamic(request: Request, context: WebServerContext): Option[ResponseData] = {
-    // TODO: Do something here instead.. Find a controller
-    val paramsJson: String = request.params.map(_.toJson).mkString(",")
-    val headersJson: String = request.headers.map(_.toJson).mkString(",")
-    Some(ResponseData.json(s"""{ "your-params": [ $paramsJson ], "your-headers": [ $headersJson ] }"""))
+    Option(context.getHandler(request.method, request.path)) map { handler =>
+      Option(handler.invoke(request)) match {
+        case None => ResponseData(Array[Byte](), "text/raw")
+        case Some(data) => ResponseData(data.getBytes(StandardCharsets.UTF_8), "application/json")
+      }
+    }
   }
 }
 

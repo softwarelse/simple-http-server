@@ -4,7 +4,7 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
 case class StartLine(method: String, uri: String, httpVersion: String) {
-  val params: Seq[KV] = uri.split('?').drop(1).headOption.getOrElse("").split('&').map(parseParam).filter(_.nonEmpty)
+  val queryParams: Seq[KV] = uri.split('?').drop(1).headOption.getOrElse("").split('&').map(parseParam).filter(_.nonEmpty)
   val path: String = uri.split('?').head
 
   private def parseParam(in: String): KV = {

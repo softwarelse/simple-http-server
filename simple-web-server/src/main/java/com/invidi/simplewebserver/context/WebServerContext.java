@@ -8,4 +8,5 @@ public interface WebServerContext {
     String getStaticPath();
 
     void addController(Object controller);
+    RequestHandler getHandler(String method, String requestPath);
 }
