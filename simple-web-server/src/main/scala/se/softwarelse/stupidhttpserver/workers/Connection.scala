@@ -22,35 +22,28 @@ class Connection(clientSocket: Socket,
         val request = RequestParser.parse(stream)
         val reply = Processor.process(request, webServerContext)
         sendReply(reply)
-        clientSocket.close() // Maybe support persistent connections?
       }
     } catch {
       case HttpServiceException(status, msg) =>
         log.warning(s"Shit went wrong with the request, status: $status, msg: $msg")
-        if (!clientSocket.isOutputShutdown && !clientSocket.isClosed) {
-          Try(sendReply(Reply(
-            status = status,
-            version = "HTTP/1.1",
-            customHeaders = Nil,
-            body = Some(msg.getBytes(StandardCharsets.UTF_8))
-          )))
-        }
-        Try(clientSocket.close()) // just eat any errors from .close()
+        sendReplyIgnoreErrors(status, msg)
       case NonFatal(e) =>
         log.severe(s"Shit went wrong with client socket $clientSocket due to $e, shutting down")
-        if (!clientSocket.isOutputShutdown && !clientSocket.isClosed) {
-          Try(sendReply(Reply(
-            status = 500,
-            version = "HTTP/1.1",
-            customHeaders = Nil,
-            body = Some(s"Shit went wrong. Check server logs for details".getBytes(StandardCharsets.UTF_8)) // intentionally not leaking internal errors
-          )))
-        }
-        Try(clientSocket.close()) // just eat any errors from .close()
+        sendReplyIgnoreErrors(500, s"Shit went wrong. Check server logs for details")
     }
     Try(clientSocket.close()) // just eat any errors from .close()
   }
 
+  private def sendReplyIgnoreErrors(code: Int, msg: String): Unit = Try {
+    if (!clientSocket.isOutputShutdown && !clientSocket.isClosed) {
+      sendReply(Reply(
+        status = code,
+        version = "HTTP/1.1",
+        customHeaders = Nil,
+        body = Some(msg.getBytes(StandardCharsets.UTF_8))
+      ))
+    }
+  }
 
   private def sendReply(reply: Reply): Unit = {
     clientSocket.getOutputStream.write(reply.httpResponseStringHead.getBytes(StandardCharsets.UTF_8))
