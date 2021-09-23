@@ -10,8 +10,8 @@ import java.util.logging.Logger
 import scala.util.Try
 import scala.util.control.NonFatal
 
-class Client(clientSocket: Socket,
-             webServerContext: WebServerContext) extends Runnable {
+class Session(clientSocket: Socket,
+              webServerContext: WebServerContext) extends Runnable {
 
   private val log: Logger = Logger.getLogger(getClass.getName)
 
