@@ -2,7 +2,7 @@ package se.softwarelse.stupidhttpserver
 
 import com.invidi.simplewebserver.context.WebServerContext
 import com.invidi.simplewebserver.main.WebServer
-import se.softwarelse.stupidhttpserver.workers.Accepter
+import se.softwarelse.stupidhttpserver.workers.Acceptor
 
 import java.net.ServerSocket
 import java.util.logging.Logger
@@ -17,7 +17,7 @@ class StupidHttpServer extends WebServer {
     require(serverSocket == null, s"Dont start twice!")
     log.info(s"Starting $this on port $port")
     serverSocket = new ServerSocket(port)
-    new Thread(new Accepter(serverSocket, context)).start()
+    new Thread(new Acceptor(serverSocket, context)).start()
   }
 
   override def stop(): Unit = {
