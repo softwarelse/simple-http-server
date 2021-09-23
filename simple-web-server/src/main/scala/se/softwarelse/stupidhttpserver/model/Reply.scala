@@ -4,9 +4,9 @@ import se.softwarelse.stupidhttpserver.httpEndl
 
 import java.nio.charset.StandardCharsets
 
-case class Reply(status: Int, version: String, customHeaders: Seq[KV], body: Option[String]) {
-  val defaultBody = ""
-  val bodyBytes: Array[Byte] = body.getOrElse(defaultBody).getBytes(StandardCharsets.UTF_8)
+case class Reply(status: Int, version: String, customHeaders: Seq[KV], body: Option[Array[Byte]]) {
+  val defaultBody: Array[Byte] = Array[Byte]()
+  val bodyBytes: Array[Byte] = body.getOrElse(defaultBody)
   val bodyBytesLen: Int = bodyBytes.length
   val defaultHeaders: Seq[KV] = Seq(
     KV("Server", "StupidHttpServer"),
@@ -15,8 +15,7 @@ case class Reply(status: Int, version: String, customHeaders: Seq[KV], body: Opt
   )
   val allHeaders: Seq[KV] = defaultHeaders ++ customHeaders
   lazy val httpResponseStringHeaders: String = allHeaders.map(h => s"${h.key}: ${h.value}").mkString("", httpEndl, httpEndl)
-  lazy val httpResponseString: String =
+  lazy val httpResponseStringHead: String =
     version + " " + status + httpEndl +
-      httpResponseStringHeaders + httpEndl +
-      body.getOrElse(defaultBody)
+      httpResponseStringHeaders + httpEndl
 }

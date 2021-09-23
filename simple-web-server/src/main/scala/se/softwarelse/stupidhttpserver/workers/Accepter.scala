@@ -6,7 +6,8 @@ import java.net.ServerSocket
 import java.util.logging.Logger
 import scala.util.control.NonFatal
 
-class Accepter(serverSocket: ServerSocket, webServerContext: WebServerContext) extends Runnable {
+class Accepter(serverSocket: ServerSocket,
+               webServerContext: WebServerContext) extends Runnable {
 
   private val log: Logger = Logger.getLogger(getClass.getName)
 
